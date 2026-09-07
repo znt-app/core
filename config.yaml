@@ -3,7 +3,7 @@ llm:
   url: https://openrouter.ai/api/v1
   token: ""
   model: qwen/qwen3.7-flash
-  embed_model: bge-m3
+  embed_model: null
   request_timeout_minutes: 20
   retry_delays_seconds: [60, 120, 300]
   max_bytes: 25000
