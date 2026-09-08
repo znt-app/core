@@ -127,7 +127,15 @@ foreground-процесса daemon останавливается.
 
 ## ⚙️ Конфигурация (config.yaml)
 
-Настройки хранятся в `config.yaml` в директории запуска. Если файл отсутствует, применяются встроенные дефолтные значения.
+Настройки хранятся в YAML-файле `config.yaml`. При управляемой установке MCP
+создаёт его рядом с бинарником после интерактивного setup. Для ручной установки
+встроенный шаблон можно получить без запуска daemon:
+
+```bash
+./znt-core config defaults
+./znt-core config validate --config /absolute/path/to/config.yaml
+./znt-core config validate --config /absolute/path/to/config.yaml --check-provider
+```
 
 Путь можно переопределить для foreground daemon или при автоматическом запуске
 daemon командой `scan`:
@@ -163,7 +171,7 @@ daemon не запускается.
 llm:
   provider: openapi             # "ollama" | "openapi" | "" (пусто если без LLM)
   url: https://openrouter.ai/api/v1
-  token: "sk-or-v1-..."
+  token_ref: znt-keyring://openrouter/default
   model: qwen/qwen-2.5-7b-instruct
   embed_model: google/gemini-embedding-001
   request_timeout_minutes: 20
@@ -204,7 +212,9 @@ languages:
 #### `[llm]` — Подключение к языковым моделям
 * `provider`: Провайдер LLM (`ollama` или `openapi`).
 * `url`: Base URL API эндпоинта.
-* `token`: API-ключ (для OpenRouter / OpenAI API).
+* `token_ref`: ссылка на API-ключ в macOS Keychain, Windows Credential Manager или Linux Secret Service.
+* `token_env`: имя переменной окружения с API-ключом.
+* `token`: устаревший plaintext-вариант для обратной совместимости; не рекомендуется.
 * `model`: Модель генерации описаний кода.
 * `embed_model`: Модель для векторного эмбеддинга.
 

@@ -1,11 +1,10 @@
 {
-  "version": "1.0",
-  "config": {"name": "config.yaml", "sha256": "ea25365c020b021fe220ab677cf849fcd9c2dac0d9962f2836c5bc738cb17a01"},
+  "version": "1.1",
   "assets": {
-    "darwin-arm64": {"name": "znt-core-darwin-arm64", "sha256": "34f8392bf4507b3df7c03c71666ea635b8734d3f64bebebaf3b71addf80e57d1"},
-    "darwin-amd64": {"name": "znt-core-darwin-amd64", "sha256": "b94e4b0f9cf4bc8288c8a8877cd4d4e442cca7c09117f6fcfb0fa55795464606"},
-    "linux-arm64": {"name": "znt-core-linux-arm64", "sha256": "700c101896a42e753a2e8ed17c1ab10ff29bf4c741c8505c6d8187eda927002b"},
-    "linux-amd64": {"name": "znt-core-linux-amd64", "sha256": "fb150320d9159d909ed91ad387d27004d1161684aea03c3474066062c3783ac2"},
-    "windows-amd64": {"name": "znt-core-windows-amd64.exe", "sha256": "76b1fc559b7122b751361bd0f2e7a3f31b54557a7e5f6ba980f78eb07666247d"}
+    "darwin-arm64": {"name": "znt-core-darwin-arm64", "sha256": "0d2ed23bdb4f33b230ba8fa96d871b9c2bdab2f95afb1d6c878ed63e607ad3d7"},
+    "darwin-amd64": {"name": "znt-core-darwin-amd64", "sha256": "baaebe09f6e18cccd73bafbc9559ac7ebfbc63e6250ff0249d15107efc42d911"},
+    "linux-arm64": {"name": "znt-core-linux-arm64", "sha256": "049fa56d2887f9583d8011c26575376468733722924d0951c83885c660daee4c"},
+    "linux-amd64": {"name": "znt-core-linux-amd64", "sha256": "f7fb626db5a8b4f0915caeb32692c2923e05663ad678ad3ba82e9ea08ad4fcbc"},
+    "windows-amd64": {"name": "znt-core-windows-amd64.exe", "sha256": "72cc5fdf27635eeb4f8eed72b95391638ca0bc1b687d5eecabb6b4883c232497"}
   }
 }
