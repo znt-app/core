@@ -190,7 +190,7 @@ SDK должно сохранять `code`, `message` и `data` в типизи�
 | `find_similar` | `file_path` | `file_pattern`, `path` |
 | `file_outline` | `file_path` | `path`, `file`, `filepath` |
 
-У параметров `subgraph.from`, `subgraph.to`, `depth`, `edge_types` и `format`
+У параметров `subgraph.from`, `subgraph.to`, `depth`, `edge_types`, `direction`, `internal_only` и `format`
 алиасов нет.
 
 У параметров `logs.stream_id` и `logs.after_id` алиасов нет.
@@ -233,7 +233,7 @@ SDK должно сохранять `code`, `message` и `data` в типизи�
     {"name": "javascript", "extensions": [".cjs", ".js", ".jsx", ".mjs", ".ts", ".tsx", ".vue"], "has_config": true},
     {"name": "php", "extensions": [".php"], "has_config": true},
     {"name": "python", "extensions": [".py"], "has_config": true},
-    {"name": "resource", "extensions": [".dockerfile", ".env", ".json", ".markdown", ".md", ".sql", ".toml", ".xml", ".yaml", ".yml", "Dockerfile", "Makefile"], "has_config": true}
+    {"name": "resource", "extensions": [".dockerfile", ".env", ".graphql", ".graphqls", ".ini", ".json", ".markdown", ".md", ".prisma", ".properties", ".proto", ".sql", ".toml", ".xml", ".yaml", ".yml", "Dockerfile", "Makefile"], "has_config": true}
   ],
   "capabilities": {
     "semantic_search": {
@@ -444,10 +444,21 @@ ranking boosts, а не строгими фильтрами.
 - `callees_level`: неотрицательное целое, `0` по умолчанию.
 
 `type` и `role` не исключают несовпадающие элементы, а добавляют совпавшим
-результатам boost `+4.0`. Типичные AST-типы: `declaration`, `function`, `member`,
+результатам boost `+4.0`. Канонические AST-типы ядра: `declaration`, `function`, `member`,
 `dependency`, `namespace`. Генерируемые роли включают `controller`, `repository`,
 `service`, `model`, `utility`, `contract`, `factory`, `adapter`, `handler`,
 `entrypoint`, `state`, `dependency`, `callsite`, `test`, `generic`.
+
+> [!IMPORTANT]
+> **Канонические AST-типы ядра и ответственность SDK**:
+> Движок `znt-core` является кроссплатформенным и на входе ожидает строго канонические типы AST:
+> - `declaration` — классы, интерфейсы, структуры, типы, перечисления (`class`, `struct`, `interface`, `type`, `enum`);
+> - `function` — функции, методы, конструкторы (`function`, `method`, `constructor`);
+> - `member` — поля, свойства, константы (`field`, `property`, `member`);
+> - `dependency` — внешние импорты/модули;
+> - `namespace` — пакеты и пространства имен.
+>
+> Клиентские SDK (включая `znt-sdk-nodejs` и адаптеры MCP) несут ответственность за нормализацию специфичных для языков программирования синонимов перед отправкой в ядро (`class`/`struct`/`interface`/`type`/`enum` $\to$ `declaration`, `method`/`constructor` $\to$ `function`, `field`/`property` $\to$ `member`).
 
 Маска `file_path` является фильтром. Если она не начинается с `**/`, такой
 префикс проверяется автоматически. Например, `pkg/parser/ids.go` сопоставляется
@@ -576,6 +587,8 @@ ranking boosts, а не строгими фильтрами.
   "to": "SemanticStore.SearchFTS5",
   "depth": 2,
   "edge_types": "call,contains",
+  "direction": "down",
+  "internal_only": true,
   "format": "json"
 }
 ```
@@ -588,6 +601,15 @@ ranking boosts, а не строгими фильтрами.
   `"oops"`, дробное или неположительное число возвращает `-32602`;
 - `edge_types`: comma-separated string из `contains`, `call`, `inherits`,
   `implements`;
+- `direction`: string, опционально, допустимые значения: `"both"`, `"down"`, `"up"`.
+  Значение по умолчанию в ядре: `"both"`. Задает направление BFS-обхода в локальном режиме:
+  - `"down"`: обход только исходящих ребер (callees / дерево вызовов). Исключает входящие вызовы
+    и предотвращает раздувание графа тестами и сиблингами на `depth >= 2`;
+  - `"up"`: обход только входящих ребер (callers / кто вызывает данный символ);
+  - `"both"`: двунаправленный обход (одновременно callers и callees);
+- `internal_only`: boolean, опционально, по умолчанию `false` в ядре (в `znt-mcp-server` по умолчанию `true`).
+  При `true` фильтрует внешние узлы (библиотеки, stdlib, JDK, vendor), не имеющие файла в проекте,
+  оставляя в графе только символы кодовой базы проекта;
 - `format`: string, `text` по умолчанию. Значение обрезается по краям и
   приводится к нижнему регистру перед проверкой. Допустимы `text`, `json`,
   `mermaid`; любой другой формат возвращает `-32602 Invalid params`.
